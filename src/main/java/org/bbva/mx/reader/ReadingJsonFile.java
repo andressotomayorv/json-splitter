@@ -22,7 +22,7 @@ public class ReadingJsonFile {
 
     public Path read() {
         Path sourceFile = this.validatingSourceFile();
-        Path temporal = Path.of("archivo.tmp");
+        Path temporal = Path.of("src/main/resources/temporal-files/archivo.tmp");
         try (BufferedReader reader = Files.newBufferedReader(sourceFile); BufferedWriter writer = Files.newBufferedWriter(temporal)) {
             reader.lines()
                     .map(j -> j.replace("^", "[").replace("!", "]"))
@@ -36,16 +36,14 @@ public class ReadingJsonFile {
                     });
             return Files.move(temporal, sourceFile, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e.getMessage());
         }
     }
 
     private Path validatingSourceFile() {
         log.info("Validating JSON file.");
         if (configurations != null && configurations.sourcePath() != null && !configurations.sourcePath().isBlank()) {
-            Path source = Path.of(configurations.sourcePath());
-            log.info("Successful JSON file validation");
-            if (Files.isRegularFile(source)) return source;
+            return Path.of(configurations.sourcePath());
         }
         throw new FileNotFoundException("File source not Found.");
     }

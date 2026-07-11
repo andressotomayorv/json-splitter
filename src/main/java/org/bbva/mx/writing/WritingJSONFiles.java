@@ -35,32 +35,23 @@ public class WritingJSONFiles {
         this.sourceFile = sourceFile;
         this.configurations = configurations;
     }
-
     public void write() {
 
         log.info("Writing JSON files.");
-
         Path target = validateTargetPath();
-
         try (JsonParser parser = mapper.createParser(sourceFile)) {
-
             log.info("Starting the files writing process in the target directory.");
-
             if (parser.nextToken() != JsonToken.START_ARRAY) {
                 throw new IllegalStateException("Expected JSON array.");
             }
             int counter = 0;
-
             while (parser.nextToken() != JsonToken.END_ARRAY) {
                 JsonNode node = parser.readValueAsTree();
                 Path file = target.resolve("file_" + (++counter) + ".json");
                 executor.execute(() -> mapper.writeValue(file.toFile(), node));
             }
-
         }
-
         executor.shutdown();
-
         try {
             if (!executor.awaitTermination(2, TimeUnit.HOURS))  executor.shutdownNow();
         } catch (InterruptedException e) {
@@ -93,11 +84,9 @@ public class WritingJSONFiles {
     private void deleteFilesInTheDestinationDirectory(Path target) {
         log.info("Deleting files in the destination directory.");
         try (Stream<Path> files = Files.walk(target)) {
-
             files.filter(path -> path.toString().endsWith(".json"))
                     .forEach(path ->  executor.submit(()-> Files.deleteIfExists(path)));
             log.info("Files deleted successfully.");
-
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

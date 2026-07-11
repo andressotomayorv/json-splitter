@@ -1,4 +1,4 @@
 {
-  "sourcePath": "src/main/resources/bhs-valid.json",
+  "sourcePath": "src/main/resources/valid-bhs.json",
   "targetPath": "src/main/resources/target-test"
 }
